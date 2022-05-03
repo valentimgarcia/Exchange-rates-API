@@ -1,5 +1,9 @@
 package com.example.Exchange.Rates.API.controller;
 
+import com.example.Exchange.Rates.API.model.ExchangeRateAmountPojo;
+import com.example.Exchange.Rates.API.model.ExchangeRateFromListOfCurrenciesPojo;
+import com.example.Exchange.Rates.API.model.ExchangeRatePojo;
+import com.example.Exchange.Rates.API.model.ExchangeRateFromOneCurrencyPojo;
 import com.google.gson.JsonParser;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -30,16 +34,15 @@ public class ExchangeController {
             @ApiResponse(code = 403, message = "You do not have permission to access this feature!"),
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
-    @GetMapping("/api")
+    @GetMapping(value ="/api")
     public String api() {
-
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
         String response = restTemplate.exchange(url + "/latest", HttpMethod.GET, entity, String.class).getBody();  // json string
         JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
-        JsonObject req_result = jsonObject.get("rates").getAsJsonObject();
+        JsonObject result = jsonObject.get("rates").getAsJsonObject();
 
-        return "Latest Exchange Rates: \n" + req_result.toString();
+        return "Latest Exchange Rates: \n" + result.toString();
     }
 
     @ApiResponses(value = {
@@ -47,12 +50,15 @@ public class ExchangeController {
             @ApiResponse(code = 403, message = "You do not have permission to access this feature!"),
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
-    @GetMapping("/exchange/rate/{x}/{y}")
-    public String exchangeRate(@PathVariable String x, @PathVariable String y) {
-
+    @GetMapping(value = "/exchange/rate/{currencyA}/{currencyB}", produces = "application/json")
+    public String exchangeRate(@PathVariable String currencyA, @PathVariable String currencyB) {
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
-        return restTemplate.exchange(url + "/convert?from=" + x + "&to=" + y, HttpMethod.GET, entity, String.class).getBody();
+        String response = restTemplate.exchange(url + "/convert?from=" + currencyA + "&to=" + currencyB, HttpMethod.GET, entity, String.class).getBody();
+        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        ExchangeRatePojo pojo = new ExchangeRatePojo(jsonObject);
+
+        return pojo.toString();
     }
 
     @ApiResponses(value = {
@@ -60,12 +66,15 @@ public class ExchangeController {
             @ApiResponse(code = 403, message = "You do not have permission to access this feature!"),
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
-    @GetMapping("/all/exchange/rates/{x}")
-    public String exchangeRatesFromOneCurrency(@PathVariable String x) {
-
+    @GetMapping(value ="/all/exchange/rates/{currencyA}", produces = "application/json")
+    public String exchangeRateFromOneCurrency(@PathVariable String currencyA) {
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
-        return restTemplate.exchange(url + "/latest?base=" + x, HttpMethod.GET, entity, String.class).getBody();
+        String response = restTemplate.exchange(url + "/latest?base=" + currencyA, HttpMethod.GET, entity, String.class).getBody();
+        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        ExchangeRateFromOneCurrencyPojo pojo = new ExchangeRateFromOneCurrencyPojo(jsonObject);
+
+        return pojo.toString();
     }
 
     @ApiResponses(value = {
@@ -73,12 +82,15 @@ public class ExchangeController {
             @ApiResponse(code = 403, message = "You do not have permission to access this feature!"),
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
-    @GetMapping("/conversion/{amount}/{x}/{y}")
-    public String exchangeRateAmount(@PathVariable Integer amount, @PathVariable String x, @PathVariable String y) {
-
+    @GetMapping(value ="/conversion/{amount}/{currencyA}/{currencyB}", produces = "application/json")
+    public String exchangeRateAmount(@PathVariable Integer amount, @PathVariable String currencyA, @PathVariable String currencyB) {
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
-        return restTemplate.exchange(url + "/convert?amount=" + amount + "&from=" + x + "&to=" + y, HttpMethod.GET, entity, String.class).getBody();
+        String response = restTemplate.exchange(url + "/convert?amount=" + amount + "&from=" + currencyA + "&to=" + currencyB, HttpMethod.GET, entity, String.class).getBody();
+        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        ExchangeRateAmountPojo pojo = new ExchangeRateAmountPojo(jsonObject);
+
+        return pojo.toString();
     }
 
     @ApiResponses(value = {
@@ -86,11 +98,14 @@ public class ExchangeController {
             @ApiResponse(code = 403, message = "You do not have permission to access this feature!"),
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
-    @GetMapping("/conversion/list/{x}/{list}")
-    public String exchangeRatesFromListOfCurrencies(@PathVariable String x, @PathVariable String list) {
-
+    @GetMapping(value ="/conversion/list/{currencyA}/{list}", produces = "application/json")
+    public String exchangeRateFromListOfCurrencies(@PathVariable String currencyA, @PathVariable String list) {
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
-        return restTemplate.exchange(url + "/latest?base=" + x + "&symbols=" + list, HttpMethod.GET, entity, String.class).getBody();
+        String response = restTemplate.exchange(url + "/latest?base=" + currencyA + "&symbols=" + list, HttpMethod.GET, entity, String.class).getBody();
+        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        ExchangeRateFromListOfCurrenciesPojo pojo = new ExchangeRateFromListOfCurrenciesPojo(jsonObject);
+
+        return pojo.toString();
     }
 }
