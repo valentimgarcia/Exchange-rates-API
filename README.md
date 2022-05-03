@@ -9,4 +9,4 @@ How to run:
 - Run the ExchangeRatesApiApplication class
 - Open your browser at: http://localhost:8080/swagger-ui.html
 
-After this, just go to the Exchange Controller and test :) 
+After this, just go to the Exchange Controller and test.
