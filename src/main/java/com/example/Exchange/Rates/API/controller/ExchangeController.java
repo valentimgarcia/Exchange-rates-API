@@ -8,6 +8,8 @@ import com.google.gson.JsonParser;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,6 +22,7 @@ import java.util.Arrays;
 import com.google.gson.JsonObject;
 
 @RestController
+@CacheConfig(cacheNames = "myExchangeController")
 public class ExchangeController {
 
     @Autowired
@@ -35,6 +38,7 @@ public class ExchangeController {
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
     @GetMapping(value ="/api")
+    @Cacheable
     public String api() {
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
@@ -51,6 +55,7 @@ public class ExchangeController {
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
     @GetMapping(value = "/exchange/rate/{currencyA}/{currencyB}", produces = "application/json")
+    @Cacheable
     public String exchangeRate(@PathVariable String currencyA, @PathVariable String currencyB) {
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
@@ -67,6 +72,7 @@ public class ExchangeController {
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
     @GetMapping(value ="/all/exchange/rates/{currencyA}", produces = "application/json")
+    @Cacheable
     public String exchangeRateFromOneCurrency(@PathVariable String currencyA) {
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
@@ -83,6 +89,7 @@ public class ExchangeController {
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
     @GetMapping(value ="/conversion/{amount}/{currencyA}/{currencyB}", produces = "application/json")
+    @Cacheable
     public String exchangeRateAmount(@PathVariable Integer amount, @PathVariable String currencyA, @PathVariable String currencyB) {
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
@@ -99,6 +106,7 @@ public class ExchangeController {
             @ApiResponse(code = 500, message = "An exception was thrown"),
     })
     @GetMapping(value ="/conversion/list/{currencyA}/{list}", produces = "application/json")
+    @Cacheable
     public String exchangeRateFromListOfCurrencies(@PathVariable String currencyA, @PathVariable String list) {
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
